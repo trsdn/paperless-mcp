@@ -1,0 +1,31 @@
+[Unit]
+Description=Paperless MCP server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=paperless-mcp
+Group=paperless-mcp
+EnvironmentFile=/etc/paperless-mcp/env
+WorkingDirectory=/opt/paperless-mcp
+ExecStart=/opt/paperless-mcp/.venv/bin/paperless-mcp
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/paperless-mcp
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target
