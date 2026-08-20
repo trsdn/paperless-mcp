@@ -18,9 +18,9 @@ EXPECTED_TOOLS = {
 
 
 def test_mcp_exposes_expected_tools():
-    tools = asyncio.run(server.mcp.get_tools())
+    tools = asyncio.run(server.mcp.list_tools())
 
-    assert set(tools) == EXPECTED_TOOLS
+    assert {tool.name for tool in tools} == EXPECTED_TOOLS
 
 
 def test_search_documents_maps_filters_and_reduces_results(monkeypatch):
@@ -46,7 +46,7 @@ def test_search_documents_maps_filters_and_reduces_results(monkeypatch):
 
     monkeypatch.setattr(server, "_get", fake_get)
 
-    result = server.search_documents.fn(
+    result = server.search_documents(
         query="invoice",
         tag_ids=[5, 6],
         correspondent_id=3,
@@ -97,7 +97,7 @@ def test_get_document_can_omit_ocr_content(monkeypatch):
         },
     )
 
-    result = server.get_document.fn(document_id=42, include_content=False)
+    result = server.get_document(document_id=42, include_content=False)
 
     assert result["id"] == 42
     assert "content" not in result
@@ -171,7 +171,7 @@ def test_download_document_returns_encoded_content(monkeypatch):
     )
     monkeypatch.setattr(server, "_client", lambda: client)
 
-    result = server.download_document.fn(document_id=42, original=True)
+    result = server.download_document(document_id=42, original=True)
 
     assert client.requests == [("GET", "/api/documents/42/download/?original=true", None)]
     assert result == {
@@ -188,7 +188,7 @@ def test_download_document_propagates_http_errors(monkeypatch):
     monkeypatch.setattr(server, "_client", lambda: client)
 
     with pytest.raises(RuntimeError, match="Paperless request failed"):
-        server.download_document.fn(document_id=42)
+        server.download_document(document_id=42)
 
 
 def test_list_tools_follow_absolute_pagination(monkeypatch):
@@ -210,7 +210,7 @@ def test_list_tools_follow_absolute_pagination(monkeypatch):
     )
     monkeypatch.setattr(server, "_client", lambda: client)
 
-    result = server.list_tags.fn(page_size=1)
+    result = server.list_tags(page_size=1)
 
     assert [item["id"] for item in result] == [1, 2]
     assert client.requests == [
@@ -229,7 +229,7 @@ def test_update_document_merges_tags(monkeypatch, config):
 
     monkeypatch.setattr(server, "_patch", fake_patch)
 
-    result = server.update_document.fn(
+    result = server.update_document(
         document_id=42,
         add_tag_ids=[3],
         remove_tag_ids=[1],
@@ -241,21 +241,21 @@ def test_update_document_merges_tags(monkeypatch, config):
 
 def test_update_document_rejects_conflicting_tag_modes(config):
     with pytest.raises(ValueError, match="mutually exclusive"):
-        server.update_document.fn(document_id=42, add_tag_ids=[1], set_tag_ids=[2])
+        server.update_document(document_id=42, add_tag_ids=[1], set_tag_ids=[2])
 
 
 def test_write_tools_are_blocked_in_read_only_mode(config):
     server.CONFIG = server.Config(**{**config.__dict__, "read_only": True})
 
     with pytest.raises(PermissionError, match="read-only mode"):
-        server.update_document.fn(document_id=42, title="Blocked")
+        server.update_document(document_id=42, title="Blocked")
     with pytest.raises(PermissionError, match="read-only mode"):
-        server.upload_document.fn(filename="blocked.pdf", content_b64="YQ==")
+        server.upload_document(filename="blocked.pdf", content_b64="YQ==")
 
 
 def test_upload_rejects_invalid_base64(config):
     with pytest.raises(ValueError, match="not valid base64"):
-        server.upload_document.fn(filename="invalid.pdf", content_b64="not base64")
+        server.upload_document(filename="invalid.pdf", content_b64="not base64")
 
 
 def test_upload_passes_file_and_metadata(monkeypatch, config):
@@ -263,7 +263,7 @@ def test_upload_passes_file_and_metadata(monkeypatch, config):
     monkeypatch.setattr(server, "_client", lambda: client)
     encoded = base64.b64encode(b"pdf bytes").decode("ascii")
 
-    result = server.upload_document.fn(
+    result = server.upload_document(
         filename="invoice.pdf",
         content_b64=encoded,
         title="Invoice",

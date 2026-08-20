@@ -4,6 +4,22 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Security
+
+- Upgraded FastMCP to 3.4.7, resolving an SSRF and path traversal issue in the
+  OpenAPI provider (critical), missing consent verification in the OAuth proxy
+  callback (high), and a command injection issue (medium).
+- Upgraded pytest to 9.1.1, resolving vulnerable `tmpdir` handling (medium).
+- Dropped the transitive `diskcache` dependency, which carried an unpatched
+  unsafe pickle deserialization issue (medium).
+
+### Changed
+
+- Migrated to the FastMCP 3.x API: tool discovery now uses `list_tools()`, and
+  `@mcp.tool` returns the original function, so tests call tools directly
+  instead of through the removed `.fn` accessor.
+- Raised the development dependency floor to `pytest-cov>=7.1.0`.
+
 ## [0.1.1] - 2026-08-20
 
 ### Added
