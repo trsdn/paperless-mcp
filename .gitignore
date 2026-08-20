@@ -7,4 +7,5 @@ build/
 .env
 .env.*
 !deploy/paperless-mcp.env.example
-uv.lock
+.coverage
+coverage.xml

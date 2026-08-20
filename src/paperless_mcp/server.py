@@ -5,7 +5,7 @@ Backend:   Paperless-ngx REST API via httpx, authenticated with a
            Paperless API token.
 
 Environment variables:
-    PAPERLESS_URL          Base URL of the Paperless instance, e.g. http://192.168.2.23:8000
+    PAPERLESS_URL          Base URL of the Paperless instance, e.g. http://127.0.0.1:8000
     PAPERLESS_TOKEN        API token of a Paperless user (Settings -> API tokens)
     PAPERLESS_MCP_TOKEN    Static bearer token clients must present (Authorization: Bearer ...)
     PAPERLESS_MCP_HOST     Bind address (default: 0.0.0.0)
@@ -59,8 +59,15 @@ def _load_config() -> Config:
     )
 
 
-CONFIG = _load_config()
+CONFIG: Config | None = None
 mcp = FastMCP("paperless-mcp")
+
+
+def get_config() -> Config:
+    global CONFIG
+    if CONFIG is None:
+        CONFIG = _load_config()
+    return CONFIG
 
 
 # --- auth middleware ------------------------------------------------------
@@ -69,24 +76,26 @@ class BearerAuthMiddleware(BaseHTTPMiddleware):
     """Reject any HTTP request to the MCP endpoint without a valid bearer token."""
 
     async def dispatch(self, request, call_next):
+        config = get_config()
         header = request.headers.get("authorization", "")
         scheme, _, token = header.partition(" ")
-        if scheme.lower() != "bearer" or token.strip() != CONFIG.mcp_token:
+        if scheme.lower() != "bearer" or token.strip() != config.mcp_token:
             return JSONResponse({"error": "unauthorized"}, status_code=401)
         return await call_next(request)
 
 
 def _check_writable() -> None:
-    if CONFIG.read_only:
+    if get_config().read_only:
         raise PermissionError("Server is in read-only mode (PAPERLESS_READ_ONLY=1).")
 
 
 # --- paperless client -----------------------------------------------------
 
 def _client() -> httpx.Client:
+    config = get_config()
     return httpx.Client(
-        base_url=CONFIG.paperless_url,
-        headers={"Authorization": f"Token {CONFIG.paperless_token}"},
+        base_url=config.paperless_url,
+        headers={"Authorization": f"Token {config.paperless_token}"},
         timeout=30.0,
     )
 
@@ -321,8 +330,9 @@ def upload_document(
 
 
 def main() -> None:
-    app = mcp.http_app(path=CONFIG.path, middleware=[Middleware(BearerAuthMiddleware)])
-    uvicorn.run(app, host=CONFIG.host, port=CONFIG.port, log_level="info")
+    config = get_config()
+    app = mcp.http_app(path=config.path, middleware=[Middleware(BearerAuthMiddleware)])
+    uvicorn.run(app, host=config.host, port=config.port, log_level="info")
 
 
 if __name__ == "__main__":
