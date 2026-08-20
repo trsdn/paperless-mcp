@@ -22,6 +22,9 @@ All notable changes to this project are documented in this file.
 - Upgraded `actions/checkout` to v7 and `gitleaks/gitleaks-action` to v3, moving
   every workflow action onto the Node 24 runtime before GitHub removes Node 20
   from hosted runners on 2026-09-16.
+- Pinned `astral-sh/setup-uv` to the immutable tag `v10.0.1`. The action stopped
+  publishing major tags after v7, so the previous `@v7` reference could never be
+  updated automatically.
 
 ## [0.1.1] - 2026-08-20
 
