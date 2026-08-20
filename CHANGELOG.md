@@ -19,6 +19,9 @@ All notable changes to this project are documented in this file.
   `@mcp.tool` returns the original function, so tests call tools directly
   instead of through the removed `.fn` accessor.
 - Raised the development dependency floor to `pytest-cov>=7.1.0`.
+- Upgraded `actions/checkout` to v7 and `gitleaks/gitleaks-action` to v3, moving
+  every workflow action onto the Node 24 runtime before GitHub removes Node 20
+  from hosted runners on 2026-09-16.
 
 ## [0.1.1] - 2026-08-20
 
