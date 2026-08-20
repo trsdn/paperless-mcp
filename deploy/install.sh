@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install paperless-mcp on the Paperless-ngx LXC (192.168.2.23 / LXC 106).
+# Install paperless-mcp on a Debian-based Linux host with systemd.
 # Usage:  sudo bash install.sh
 set -euo pipefail
 
@@ -30,7 +30,7 @@ fi
 
 echo "==> Building venv"
 cd "$TARGET"
-uv sync
+uv sync --locked --no-dev
 chown -R paperless-mcp:paperless-mcp "$TARGET"
 
 echo "==> Setting up env + logs"
