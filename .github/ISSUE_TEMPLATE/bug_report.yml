@@ -1,0 +1,65 @@
+name: Bug report
+description: Report reproducible incorrect behavior in Paperless MCP
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Paperless MCP. Do not include document content, OCR text, tokens, hostnames, or private IP addresses.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Release tag or commit hash
+      placeholder: v0.1.1
+    validations:
+      required: true
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client
+      options:
+        - VS Code
+        - Claude Desktop
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior without private document or deployment data.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Configure the server with...
+        2. Call the tool...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Redact tokens, document data, usernames, hostnames, URLs, and IP addresses.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety checks
+      options:
+        - label: I removed documents, OCR text, credentials, and private network details.
+          required: true
+        - label: I searched existing issues for the same problem.
+          required: true

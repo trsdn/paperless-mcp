@@ -1,12 +1,32 @@
 # paperless-mcp
 
-A small [MCP](https://modelcontextprotocol.io/) server that exposes a
+[![CI](https://github.com/trsdn/paperless-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/trsdn/paperless-mcp/actions/workflows/ci.yml)
+[![Secret scan](https://github.com/trsdn/paperless-mcp/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/trsdn/paperless-mcp/actions/workflows/secret-scan.yml)
+[![Release](https://img.shields.io/github/v/release/trsdn/paperless-mcp)](https://github.com/trsdn/paperless-mcp/releases/latest)
+[![Python](https://img.shields.io/badge/Python-3.11--3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/github/license/trsdn/paperless-mcp)](LICENSE)
+
+An authenticated [Model Context Protocol](https://modelcontextprotocol.io/)
+server that exposes a
 [Paperless-ngx](https://docs.paperless-ngx.com/) instance over streamable HTTP
 with static bearer-token authentication, built with
 [FastMCP](https://github.com/PrefectHQ/fastmcp).
 
-It can run on the Paperless-ngx host or another private-network Linux host as a
-systemd service. MCP clients can then search, read, tag, and upload documents.
+**Use it to:** search and read archived documents, inspect Paperless metadata,
+download files, update document properties, and upload new documents from any
+HTTP-capable MCP client.
+
+## Why Paperless MCP?
+
+- **Useful document access:** eight focused tools cover retrieval, metadata,
+  downloads, updates, and ingestion.
+- **Read-only mode:** one environment variable disables every mutating tool.
+- **Authenticated transport:** every MCP request requires a dedicated bearer
+  token independent from the Paperless API token.
+- **Self-hosted deployment:** runs beside Paperless-ngx or on another private
+  Linux host with the included systemd unit.
+- **No live-instance tests:** the test suite uses mocked HTTP requests and
+  never needs access to real documents.
 
 > [!IMPORTANT]
 > Start with `PAPERLESS_READ_ONLY=1` unless clients need to update metadata or
@@ -14,18 +34,38 @@ systemd service. MCP clients can then search, read, tag, and upload documents.
 > built-in static token authentication is not sufficient public-internet
 > hardening by itself.
 
-## Tools
+## Quick Start
 
-| Tool | Purpose |
-| --- | --- |
-| `search_documents` | Full-text + filter search (tags, correspondent, type, date) |
-| `get_document` | Metadata + OCR content for one document |
-| `download_document` | Download archived or original file (base64) |
-| `list_tags` | All Paperless tags |
-| `list_correspondents` | All Paperless correspondents |
-| `list_document_types` | All Paperless document types |
-| `update_document` | Patch title, correspondent, type, add/remove/replace tags |
-| `upload_document` | Upload a new file to the consume pipeline |
+Requirements: Python 3.11 or newer, a reachable Paperless-ngx instance, and
+[uv](https://docs.astral.sh/uv/getting-started/installation/).
+
+```bash
+git clone https://github.com/trsdn/paperless-mcp.git
+cd paperless-mcp
+uv sync --locked --no-dev
+
+export PAPERLESS_URL=http://127.0.0.1:8000
+export PAPERLESS_TOKEN=your-paperless-api-token
+export PAPERLESS_MCP_TOKEN="$(openssl rand -hex 32)"
+export PAPERLESS_READ_ONLY=1
+uv run paperless-mcp
+```
+
+The server listens on `http://0.0.0.0:8770/mcp` by default. Keep the generated
+MCP token secret and configure the same value in the client.
+
+## Available Tools
+
+| Tool | Access | Purpose |
+| --- | --- | --- |
+| `search_documents` | Read | Full-text and filtered document search |
+| `get_document` | Read | Return metadata and optional OCR content |
+| `download_document` | Read | Return an archived or original file as base64 |
+| `list_tags` | Read | List Paperless tags |
+| `list_correspondents` | Read | List Paperless correspondents |
+| `list_document_types` | Read | List Paperless document types |
+| `update_document` | Write | Update title, correspondent, type, or tags |
+| `upload_document` | Write | Upload a file to the consume pipeline |
 
 `update_document` and `upload_document` are disabled when
 `PAPERLESS_READ_ONLY=1`. The compatibility default remains `0`, so set the
@@ -46,7 +86,7 @@ All configuration is via environment variables — see
 | `PAPERLESS_MCP_PATH` | no | `/mcp` | HTTP path |
 | `PAPERLESS_READ_ONLY` | no | `0` | Set `1` to disable writes |
 
-## Install on Linux with systemd
+## Linux Service
 
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/trsdn/paperless-mcp/main/deploy/install.sh
@@ -57,32 +97,24 @@ systemctl enable --now paperless-mcp
 journalctl -u paperless-mcp -f
 ```
 
-Generate the bearer token once:
+Generate a dedicated bearer token before editing the environment file:
 
 ```bash
 openssl rand -hex 32
 ```
 
-## Local development
+## Development
 
 ```bash
-uv sync
-export PAPERLESS_URL=http://127.0.0.1:8000
-export PAPERLESS_TOKEN=...        # Paperless API token
-export PAPERLESS_MCP_TOKEN=devtoken
-export PAPERLESS_READ_ONLY=1
-uv run paperless-mcp
-```
-
-Run the quality checks with:
-
-```bash
+uv sync --locked --all-groups
 uv run ruff check .
+uv run ruff format --check .
 uv run pytest --cov=paperless_mcp --cov-fail-under=85
 uv build
 ```
 
-The server listens on `http://0.0.0.0:8770/mcp`.
+Tests use mocked HTTP requests and never require a live Paperless-ngx instance.
+CI runs on Python 3.11, 3.12, 3.13, and 3.14.
 
 ## Client config
 
@@ -125,7 +157,7 @@ Claude Desktop currently only speaks MCP over **stdio**, so use the
 }
 ```
 
-## Security notes
+## Security Model
 
 - Prefer `PAPERLESS_READ_ONLY=1`. Enable writes only for clients that require
   them and that you trust with document access.
@@ -141,6 +173,13 @@ Claude Desktop currently only speaks MCP over **stdio**, so use the
 - See [SECURITY.md](SECURITY.md) for vulnerability reporting and the supported
   security boundary.
 
-## License
+## Project
 
-MIT
+- [Releases](https://github.com/trsdn/paperless-mcp/releases)
+- [Changelog](CHANGELOG.md)
+- [Contributing](CONTRIBUTING.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
+- [Security policy](SECURITY.md)
+- [Issue tracker](https://github.com/trsdn/paperless-mcp/issues)
+
+Licensed under the [MIT License](LICENSE).

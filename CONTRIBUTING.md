@@ -14,6 +14,7 @@ Requirements:
 ```bash
 uv sync --locked --all-groups
 uv run ruff check .
+uv run ruff format --check .
 uv run pytest --cov=paperless_mcp --cov-fail-under=85
 uv build
 ```
@@ -29,4 +30,4 @@ backward compatible unless the change is explicitly breaking, and update the
 README or changelog when appropriate.
 
 Run the complete local checks before opening a pull request. CI validates
-Python 3.11 through 3.13 and scans the repository for secrets.
+Python 3.11 through 3.14 and scans the repository for secrets.

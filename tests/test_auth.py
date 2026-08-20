@@ -20,9 +20,10 @@ def test_bearer_auth_rejects_missing_and_wrong_tokens(config):
 
     with TestClient(app) as client:
         assert client.get("/health").status_code == 401
-        assert client.get(
-            "/health", headers={"Authorization": "Bearer wrong-token"}
-        ).status_code == 401
+        assert (
+            client.get("/health", headers={"Authorization": "Bearer wrong-token"}).status_code
+            == 401
+        )
 
 
 def test_bearer_auth_allows_matching_token(config):
@@ -32,9 +33,7 @@ def test_bearer_auth_allows_matching_token(config):
     )
 
     with TestClient(app) as client:
-        response = client.get(
-            "/health", headers={"Authorization": f"Bearer {config.mcp_token}"}
-        )
+        response = client.get("/health", headers={"Authorization": f"Bearer {config.mcp_token}"})
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}

@@ -1,15 +1,34 @@
 [project]
 name = "paperless-mcp"
-version = "0.1.0"
-description = "MCP server for Paperless-ngx (HTTP transport, bearer auth)"
+version = "0.1.1"
+description = "Authenticated MCP server for searching and managing Paperless-ngx documents"
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
-authors = [{ name = "Torsten" }]
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Torsten Mahr" }]
+keywords = ["document-management", "fastmcp", "mcp", "model-context-protocol", "paperless-ngx"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business",
+]
 dependencies = [
     "fastmcp>=2.0,<3.0",
     "httpx>=0.27,<1.0",
 ]
+
+[project.urls]
+Changelog = "https://github.com/trsdn/paperless-mcp/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/trsdn/paperless-mcp#readme"
+Issues = "https://github.com/trsdn/paperless-mcp/issues"
+Repository = "https://github.com/trsdn/paperless-mcp"
 
 [dependency-groups]
 dev = [

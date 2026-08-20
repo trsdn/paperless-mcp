@@ -72,6 +72,7 @@ def get_config() -> Config:
 
 # --- auth middleware ------------------------------------------------------
 
+
 class BearerAuthMiddleware(BaseHTTPMiddleware):
     """Reject any HTTP request to the MCP endpoint without a valid bearer token."""
 
@@ -90,6 +91,7 @@ def _check_writable() -> None:
 
 
 # --- paperless client -----------------------------------------------------
+
 
 def _client() -> httpx.Client:
     config = get_config()
@@ -116,10 +118,15 @@ def _patch(path: str, payload: dict[str, Any]) -> Any:
 
 # --- tools ----------------------------------------------------------------
 
+
 @mcp.tool
 def search_documents(
-    query: Annotated[str, Field(description="Full-text query. Empty string returns most-recent documents.")] = "",
-    tag_ids: Annotated[list[int] | None, Field(description="Restrict to documents that have ALL these tag IDs.")] = None,
+    query: Annotated[
+        str, Field(description="Full-text query. Empty string returns most-recent documents.")
+    ] = "",
+    tag_ids: Annotated[
+        list[int] | None, Field(description="Restrict to documents that have ALL these tag IDs.")
+    ] = None,
     correspondent_id: int | None = None,
     document_type_id: int | None = None,
     created_after: Annotated[str | None, Field(description="ISO date YYYY-MM-DD")] = None,
@@ -160,7 +167,9 @@ def search_documents(
 @mcp.tool
 def get_document(
     document_id: int,
-    include_content: Annotated[bool, Field(description="Include full OCR text in response.")] = True,
+    include_content: Annotated[
+        bool, Field(description="Include full OCR text in response.")
+    ] = True,
 ) -> dict:
     """Fetch document metadata (and OCR content by default)."""
     d = _get(f"/api/documents/{document_id}/")
@@ -185,7 +194,9 @@ def get_document(
 @mcp.tool
 def download_document(
     document_id: int,
-    original: Annotated[bool, Field(description="If true, fetch original file; else archived (PDF/A) version.")] = False,
+    original: Annotated[
+        bool, Field(description="If true, fetch original file; else archived (PDF/A) version.")
+    ] = False,
 ) -> dict:
     """Download a document. Returns base64-encoded bytes plus filename and content type."""
     suffix = "/download/" + ("?original=true" if original else "")
@@ -213,12 +224,14 @@ def _list_simple(endpoint: str, page_size: int) -> list[dict]:
             r.raise_for_status()
             data = r.json()
             for item in data.get("results", []):
-                out.append({
-                    "id": item["id"],
-                    "name": item.get("name"),
-                    "slug": item.get("slug"),
-                    "document_count": item.get("document_count"),
-                })
+                out.append(
+                    {
+                        "id": item["id"],
+                        "name": item.get("name"),
+                        "slug": item.get("slug"),
+                        "document_count": item.get("document_count"),
+                    }
+                )
             nxt = data.get("next")
             # next is absolute URL; httpx handles it
             next_url = nxt
@@ -251,7 +264,10 @@ def update_document(
     document_type_id: int | None = None,
     add_tag_ids: list[int] | None = None,
     remove_tag_ids: list[int] | None = None,
-    set_tag_ids: Annotated[list[int] | None, Field(description="If set, REPLACES all tags. Mutually exclusive with add/remove.")] = None,
+    set_tag_ids: Annotated[
+        list[int] | None,
+        Field(description="If set, REPLACES all tags. Mutually exclusive with add/remove."),
+    ] = None,
 ) -> dict:
     """Update a document's metadata."""
     _check_writable()
