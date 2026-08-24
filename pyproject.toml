@@ -1,6 +1,6 @@
 [project]
-name = "paperless-mcp"
-version = "0.1.1"
+name = "trsdn-paperless-mcp"
+version = "0.1.2"
 description = "Authenticated MCP server for searching and managing Paperless-ngx documents"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -25,6 +25,7 @@ dependencies = [
 ]
 
 [project.urls]
+Homepage = "https://github.com/trsdn/paperless-mcp"
 Changelog = "https://github.com/trsdn/paperless-mcp/blob/main/CHANGELOG.md"
 Documentation = "https://github.com/trsdn/paperless-mcp#readme"
 Issues = "https://github.com/trsdn/paperless-mcp/issues"

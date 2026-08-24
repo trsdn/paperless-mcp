@@ -1,3 +1,5 @@
+import importlib
+
 import pytest
 
 from paperless_mcp import server
@@ -35,3 +37,9 @@ def test_get_config_loads_and_caches_environment(monkeypatch):
     assert config.path == "/test-mcp"
     assert config.read_only is True
     assert server.get_config() is config
+
+
+def test_module_entrypoint_exposes_main():
+    module = importlib.import_module("paperless_mcp.__main__")
+
+    assert module.main is server.main

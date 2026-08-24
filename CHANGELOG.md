@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-24
+
+### Added
+
+- Published on PyPI as `trsdn-paperless-mcp` via GitHub Actions Trusted
+  Publishing (OIDC, environment `pypi`, no API tokens). The release workflow now
+  builds distributions, validates them with `twine check`, and publishes them
+  before creating the GitHub release.
+- `python -m paperless_mcp` now starts the server, alongside the existing
+  `paperless-mcp` console script.
+
+### Changed
+
+- Renamed the PyPI distribution to `trsdn-paperless-mcp` because
+  `paperless-mcp` is taken by an unrelated project. The import name
+  (`paperless_mcp`) and the command name (`paperless-mcp`) are unchanged.
+
 ### Security
 
 - Upgraded FastMCP to 3.4.7, resolving an SSRF and path traversal issue in the
@@ -51,6 +68,7 @@ All notable changes to this project are documented in this file.
 - Tests for configuration, authentication, tool behavior, and write blocking.
 - CI for Python 3.11 through 3.13 and full-history secret scanning.
 
-[Unreleased]: https://github.com/trsdn/paperless-mcp/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/trsdn/paperless-mcp/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/trsdn/paperless-mcp/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/trsdn/paperless-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/trsdn/paperless-mcp/releases/tag/v0.1.0

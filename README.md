@@ -39,15 +39,31 @@ HTTP-capable MCP client.
 Requirements: Python 3.11 or newer, a reachable Paperless-ngx instance, and
 [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
-```bash
-git clone https://github.com/trsdn/paperless-mcp.git
-cd paperless-mcp
-uv sync --locked --no-dev
+The package is published on PyPI as **`trsdn-paperless-mcp`**; the command it
+installs is `paperless-mcp` and the import name is `paperless_mcp`.
 
+```bash
 export PAPERLESS_URL=http://127.0.0.1:8000
 export PAPERLESS_TOKEN=your-paperless-api-token
 export PAPERLESS_MCP_TOKEN="$(openssl rand -hex 32)"
 export PAPERLESS_READ_ONLY=1
+
+uvx --from trsdn-paperless-mcp paperless-mcp
+```
+
+Alternatively install it permanently:
+
+```bash
+pip install trsdn-paperless-mcp
+paperless-mcp          # or: python -m paperless_mcp
+```
+
+To run from a checkout instead:
+
+```bash
+git clone https://github.com/trsdn/paperless-mcp.git
+cd paperless-mcp
+uv sync --locked --no-dev
 uv run paperless-mcp
 ```
 
@@ -117,6 +133,30 @@ Tests use mocked HTTP requests and never require a live Paperless-ngx instance.
 CI runs on Python 3.11, 3.12, 3.13, and 3.14.
 
 ## Client config
+
+### Local stdio-free launch (any client that spawns a command)
+
+Clients that start the server themselves can invoke it via `uvx`:
+
+```jsonc
+{
+  "mcpServers": {
+    "paperless": {
+      "command": "uvx",
+      "args": ["--from", "trsdn-paperless-mcp", "paperless-mcp"],
+      "env": {
+        "PAPERLESS_URL": "http://127.0.0.1:8000",
+        "PAPERLESS_TOKEN": "your-paperless-api-token",
+        "PAPERLESS_MCP_TOKEN": "your-generated-mcp-token",
+        "PAPERLESS_READ_ONLY": "1"
+      }
+    }
+  }
+}
+```
+
+The server then serves streamable HTTP on `http://0.0.0.0:8770/mcp`; point the
+client at that URL as shown below.
 
 ### Claude Desktop
 
