@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- Restricted the sdist to the package source, `README.md`, `CHANGELOG.md`,
+  `LICENSE`, and `pyproject.toml`. Previously the source distribution also
+  shipped `tests/`, `deploy/` (including the environment example), the
+  `.github/` workflows, and `uv.lock`.
+- Raised the release workflow to `actions/upload-artifact@v7` and
+  `actions/download-artifact@v8`, matching the action majors already used
+  elsewhere in the repository.
+
 ## [0.1.2] - 2026-08-24
 
 ### Added
