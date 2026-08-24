@@ -12,6 +12,8 @@ All notable changes to this project are documented in this file.
   now restricted to tag pushes, which turns a manual run into a safe dry run of
   the build and quality gates.
 
+## [0.1.3] - 2026-08-24
+
 ### Changed
 
 - Restricted the sdist to the package source, `README.md`, `CHANGELOG.md`,
@@ -86,7 +88,8 @@ All notable changes to this project are documented in this file.
 - Tests for configuration, authentication, tool behavior, and write blocking.
 - CI for Python 3.11 through 3.13 and full-history secret scanning.
 
-[Unreleased]: https://github.com/trsdn/paperless-mcp/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/trsdn/paperless-mcp/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/trsdn/paperless-mcp/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/trsdn/paperless-mcp/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/trsdn/paperless-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/trsdn/paperless-mcp/releases/tag/v0.1.0
